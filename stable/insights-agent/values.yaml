@@ -35,7 +35,7 @@ cronjobs:
 cronjobExecutor:
   image:
     repository: curlimages/curl
-    tag: "7.73.0"
+    tag: "7.79.1"
   resources:
     limits:
       cpu: 100m
@@ -47,7 +47,7 @@ cronjobExecutor:
 installReporter:
   image:
     repository: curlimages/curl
-    tag: "7.73.0"
+    tag: "7.79.1"
   resources:
     limits:
       cpu: 250m
@@ -64,7 +64,7 @@ polaris:
     disabled: false
   image:
     repository: quay.io/fairwinds/polaris
-    tag: "4.0"
+    tag: "4.2"
   resources:
     limits:
       cpu: 250m
@@ -80,7 +80,7 @@ kubehunter:
   logLevel: INFO
   image:
     repository: aquasec/kube-hunter
-    tag: "0.3.1"
+    tag: "0.6.3"
   resources:
     limits:
       cpu: 250m
@@ -106,7 +106,16 @@ kubesec:
 
 goldilocks:
   enabled: false
-  installVPA: true
+  vpa:
+    enabled: true
+    recommender:
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsUser: 65534
+        capabilities:
+          drop:
+          - ALL
   schedule: "rand * * * *"
   timeout: 300
   image:
@@ -293,19 +302,53 @@ resourcemetrics:
       memory: 128Mi
 
 prometheus:
-  alertmanager:
-    enabled: false
   kubeStateMetrics:
+    enabled: true
+  alertmanager:
     enabled: false
   nodeExporter:
     enabled: false
   pushgateway:
     enabled: false
+  configmapReload:
+    prometheus:
+      enabled: false
   server:
     fullnameOverride: "prometheus-server"
+    image:
+      pullPolicy: Always
     persistentVolume:
       enabled: false
     retention: "1d"
+    deploymentAnnotations:
+      polaris.fairwinds.com/insecureCapabilities-exempt: "true"
+      polaris.fairwinds.com/privilegeEscalationAllowed-exempt: "true"
+      polaris.fairwinds.com/livenessProbeMissing-exempt: "true"
+      polaris.fairwinds.com/readinessProbeMissing-exempt: "true"
+      polaris.fairwinds.com/notReadOnlyRootFilesystem-exempt: "true"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  kube-state-metrics:
+    image:
+      pullPolicy: Always
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
 
 admission:
   enabled: false
@@ -330,3 +373,18 @@ test:
     repository: "python"
     tag: "3.6"
     pullPolicy: "Always"
+
+awscosts:
+  enabled: false
+  schedule: "rand * * * *"
+  timeout: 300
+  image:
+    repository: quay.io/fairwinds/aws-costs
+    tag: "0.1"
+  resources:
+    limits:
+      cpu: 250m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
