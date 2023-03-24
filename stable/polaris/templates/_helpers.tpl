@@ -41,7 +41,7 @@ app.kubernetes.io/component: dashboard
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ template "polaris.name" . }}
-app.kubernetes.io/part-of: {{ template "polaris.name" . }} 
+app.kubernetes.io/part-of: {{ template "polaris.name" . }}
 app.kubernetes.io/version: "{{ .Chart.Version }}"
 helm.sh/chart: {{ include "polaris.chart" . }}
 {{- end -}}

@@ -45,7 +45,7 @@ spec:
             fi
             echo Downloading kubectl version ${kubectl_version}
             curl -Lo kubectl "https://dl.k8s.io/release/${kubectl_version}/bin/linux/amd64/kubectl" && chmod +x kubectl
-          
+
             echo "Checking if cluster already exists..."
             CLUSTER_FILE="/tmp/cluster.json"
             SECRET_NAME="{{ required "You must specify insights.tokenSecretName for a fleet install" .Values.insights.tokenSecretName }}"

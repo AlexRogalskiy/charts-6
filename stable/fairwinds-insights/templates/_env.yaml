@@ -82,7 +82,7 @@ env:
   value: "true"
 {{- end }}
 {{- if .Values.reportStorage.skipFileFixtures }}
-- name: SKIP_FILE_FIXTURES 
+- name: SKIP_FILE_FIXTURES
   value: "true"
 {{- end }}
 
@@ -101,7 +101,7 @@ env:
   valueFrom:
     secretKeyRef:
       name: {{ printf "%s-%s" .Release.Name .Values.minio.nameOverride }}
-      key: accesskey                
+      key: accesskey
 - name: MINIO_SECRET_ACCESS_KEY
   valueFrom:
     secretKeyRef:
